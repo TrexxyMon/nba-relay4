@@ -2,10 +2,12 @@
 module.exports = async (req, res) => {
   try {
     const target = req.query.u;
-    if (!target || !/^https:\/\/stats\.nba\.com\/stats\/.+/i.test(target)) {
-      res.status(400).send('Specify ?u=https://stats.nba.com/stats/...');
-      return;
-    }
+    // Temporary: allow any https target for testing
+if (!target || !/^https:\/\//i.test(target)) {
+  res.status(400).send('Specify ?u=https://example.com');
+  return;
+}
+
 
     const headers = {
       'Accept': 'application/json, text/plain, */*',
