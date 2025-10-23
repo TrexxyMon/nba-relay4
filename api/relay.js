@@ -1,4 +1,4 @@
-// Vercel Serverless Function — NBA relay through a residential HTTP(S) proxy
+// Vercel Serverless Function — relay via residential proxy
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export default async function handler(req, res) {
@@ -21,20 +21,17 @@ export default async function handler(req, res) {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36'
     };
 
-    const PROXY_URL = process.env.PROXY_URL; // e.g. "http://USER:PASS@gate.decodo.com:10001"
-    if (!PROXY_URL) {
-      res.status(500).send('Proxy not configured');
-      return;
-    }
-    const agent = new HttpsProxyAgent(PROXY_URL);
+    const PROXY_URL = process.env.PROXY_URL; // e.g. http://USER:PASS@gate.decodo.com:10001
+    if (!PROXY_URL) return res.status(500).send('Proxy not configured');
 
+    const agent = new HttpsProxyAgent(PROXY_URL);
     const resp = await fetch(target, { headers, redirect: 'follow', agent });
 
     res.status(resp.status);
     let hasCT = false;
     resp.headers.forEach((v, k) => {
       const key = k.toLowerCase();
-      if (key === 'content-encoding') return; // avoid gzip confusion
+      if (key === 'content-encoding') return;
       if (key === 'content-type') hasCT = true;
       res.setHeader(k, v);
     });
