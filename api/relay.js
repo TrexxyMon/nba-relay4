@@ -1,4 +1,3 @@
-// Vercel Serverless Function — relay via residential proxy
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export default async function handler(req, res) {
@@ -22,7 +21,10 @@ export default async function handler(req, res) {
     };
 
     const PROXY_URL = process.env.PROXY_URL; // e.g. http://USER:PASS@gate.decodo.com:10001
-    if (!PROXY_URL) return res.status(500).send('Proxy not configured');
+    if (!PROXY_URL) {
+      res.status(500).send('Proxy not configured');
+      return;
+    }
 
     const agent = new HttpsProxyAgent(PROXY_URL);
     const resp = await fetch(target, { headers, redirect: 'follow', agent });
